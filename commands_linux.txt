@@ -1,4 +1,5 @@
 "mkdir -p {2020..2024}/{01..12}" - создание 5 директорий 2020.. и по 12 файлов 1...12 в каждой
+"tree <директория>" это вывод вложенных директорий и папок в виде дерева 
 "!!" - повтор предыдущей команды
 "cd -" - возврат в предыдущую директорию
 "du  -sh /usr/bin/* | grep "zip" | sort -h" - отображ всех файл директ bin, где есть "zip" по возрастанию
@@ -56,3 +57,102 @@ PATH
 	Теперь файл hello можно запустить из любой директории 
 "export CDPATH=$HOME" - в текущей сессии команда cd выведет директорию (находящ в "home" из любого места)
 "export CDPATH=$HOME.:$HOME/folder" - это в если постоянно прописать в .bashrc ("." чтобы сначала здесь искал)
+
+"ps axu" - просмотр запущенных процессов (всех)
+"ps axu | grep <process>" - просмотр конкретного процесса <process>
+	например посмотрим "ps axu | grep main.py"
+		вывод: "redoc      18441  0.6  0.8 401848 32140 pts/2    S+   17:36   0:00 python main.py"
+		18441 это PID данного процесса 
+	"kill 18441" - остановка данного процесса
+"ln <name_file> <name_file_2>" - создание жесткой ссылки на файл
+"ln -s <name_file> <name_file_2>" - создание мягкой ссылки на файл
+"sudo ln -s ~/.program/bin/mycoolprogram /usr/local/bin/mycoolprogram" - это пример
+"whoami" это запрос имени пользователя
+"groups redoc" - это запрос в какую группу входит пользователь redoc
+"cat /etc/passwd" здесь хранятся пользователи
+Вызовем
+"cat /etc/passwd | grep redoc"
+    redoc:x:1000:1000:redoc:/home/redoc:/bin/bash
+    redoc - имя текущего пользователя
+    x - пароль, храниться в зашифрованном файле /etc/s...
+    1000 - userid
+    1000 - groupid
+    redoc,,, - адрес пользователя, email пользователя.
+    /home/redoc - домашняя директория текущего пользователя
+    /bin/bash - это shel который запускается, когда пользователь входит в систему
+"cat /etc/group" - вывод групп пользователей
+"sudo adduser now_user" - создание пользователя
+"sudo group new_group" - создание группы 
+"sudo usermod -aG new_group now_user" добавление пользователя в группу
+"groups now_user" - посмотреть все группы пользователя user
+"passwd" смена пароля пользователя
+"sudo passwd now_user" смена пароля другого пользователя 
+
+ПРАВА ДОСТУПА
+"chmod o-r" file - запрет в доступе на чтение файлов прочими пользователями
+"chmod o+r" file - + доступ на чтение файла прочим
+"chmod u+r" file - + доступ на чтение файла user debian
+"sudo chgrp debian file" - назначение группы пользователей debian для файла file
+"chmod g+rwx debian" - назначение полных прав для группы debian
+"sudo chown myfreind2 file" смена владельца файла
+"sudo chown myfreind2:'name_group' file" смена владельца файла и группы одновременно
+"sudo chown myfreind2: - смена владельца файла
+"id" - id пользователя
+
+АРХИВИРОВАНИЕ РАЗАРХИВИРОВАНИЕ
+"tar -cvf file.tar file" - архивирование файла file 
+"tar -xvf file.tar" - разархивирование файла file.tar
+"tar -czvf file.tar.gz file" - архивирование с сжатием файла file 
+"tar -xzvf file.tar.gz" - разархивирование file.tar.gz
+"du -sh file*" - просмотр файлов с размерами
+ZIP UNZIP
+sudo install -y zip
+sudo install -y unzip
+"zip -r file.zip file" архивирование
+"unzip file.zip" - разархивирование
+
+ПОИСК
+"which ls" ; "which stat" вывод на экран места расположения команд /usr/bin/ls ; /usr/bin/stat
+"cat /etc/os-release" все про установленную операционную систему
+"find . -name '*.json'" вывод в тек дирктории всех файлов .json
+"find . - maxdepth 3 -name '*.json'" - 3 это уровни вложенности (1,2,3)
+"find . -type f -name '*json*'" - только файлы
+"find . -type d -name '*json*'"	- только директории
+"find . -type d -path ./second -prune -o -name '*json*' -print"- в поиске будет исключна директория second
+"find . -type d -name '*second*' -prune -o -name '*json*' -print"- в поиске будет исключна директория + вложенные такие же second
+"find . -type f -name '*.json' -o -type f -name '*.txt' - здесь -o это или
+"find . -type f -iname '*.Json'" - поиск без учета регистра
+"find . -type f -atime 0" - файлы которые мы читали от текушего момента и 24 часа назад
+"find . -type f -atime 1" - файлы которые мы читали от 24 часа до 48 часов назад
+"find . -type f -mtime 0" - файлы которые ИЗМЕНЯЛИСЬ сегодня
+"find . -type f -anewer rr.json" - файлы которые читались после чтения rr.json
+"find . -type f -сnewer rr.json" - файлы которые изменялись после изменения rr.json
+"find . -type f -size 130k" -найти файлы размером 130 килобайт; (-130k)-меньше 130 килобайт
+"find . -type f -size -130k -a -type f -size 150k" -найти файлы размером от 130 до 150 килобайт
+"-a" это или
+"find . -type f -exec du -sh {}\;" - вывод файлов с размерами
+"find . -type f -exec du -sh {}\; | sort -h" - вывод отсортированных файлов с размерами
+"find . -type f -exec du -sh {}\; | sort -h | tail -3" - вывод отсортированных 3 самых больших файлов с размерами
+"find . -type f -exec cat {}\;" - вывод содержимого всех файлов
+"find . -type f -exec du -sh {}\; -exec cat {}\;" - вывод названия всех файлов и содержимого всех файлов
+"find . -type f -exec du -sh {}\; -exec cat {}\; -exec echo '------'\;" - с разделением
+"find . -type f -name '*.txt' -print" - вывести на экран файлы
+"find . -type f -name '*.txt' -delete" - удалить файлы
+GREP
+"grep -rin --include="*.py" "charfield" ." - вывод файлов '.py' в текущей директории со словом charfield и номером строки
+"rg -i "charfield"" - это команда "ripgrep" вывод файлов в текущей директории со словом charfield и номером строки
+СРАВНЕНИЕ ФАЙЛОВ
+"md5sum 1.txt 2.txt" сравнение двух файлов 
+DNS
+"whois google.com" - посмотреть информацию о сервисе (когда и кем создан и т д )
+"sudo apt install -y whois" - так устанавливается
+
+
+
+
+
+
+
+
+
+
